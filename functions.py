@@ -33,7 +33,7 @@ def format_date_and_time(date_str):
         messages=[
             {
                 "role": "system",
-                "content": "Your task is to convert date and time in any format into the standardized format `YYYY-MM-DD HH:MM:SS`. Only return the formatted date and time, without extra explanation."
+                "content": "Your task is to convert date and time in any format into the standardized format `YYYY-MM-DD HH:MM:SS-` if not time is given skip it please. Only return the formatted date and time, without extra explanation. if not time is given dont return it please listen carefully"
             },
             {
                 "role": "user",
@@ -84,7 +84,7 @@ def format_cost(cost_str):
         messages=[
             {
                 "role": "system",
-                "content": "Your task is to format event costs in a consistent manner, including ranges (e.g., 'From $10 to $20') and single values (e.g., 'Cost: $50'). Only return the formatted cost."
+                "content": "Your task is to format event costs in a consistent manner, including ranges (e.g., 'From $10 to $20') and single values (e.g., 'Cost: $50'). Only return the formatted cost.if there is two costs just pick the big one and do with that if there is Not Available return 'Cost not available then keep it as it is Not Available but dont return like a sentence return numbers with dollar sign '" 
             },
             {
                 "role": "user",
@@ -119,29 +119,9 @@ def format_url(url):
 
 import threading
 
-# Example formatting functions
-def format_event_name(event_name):
-    return event_name.title()  # Just an example formatting
-
-def format_date_and_time(date_str):
-    return date_str.replace("st", "").replace("th", "").replace("nd", "").replace("rd", "")  # Simplified example
-
-def format_description(description):
-    return description.strip()  # Just an example formatting
-
-def format_location(location):
-    return location.strip()  # Just an example formatting
-
-def format_cost(cost_str):
-    return cost_str.replace("-", " to ")  # Just an example formatting
-
-def format_url(url):
-    if not url.startswith("https://"):
-        return "https://" + url[7:]  # Fixing missing https
-    return url
-
 
 def format_columns_parallel(data, columns):
+    print("Formatting data...") 
     formatted_data = []
 
     def format_column(index, func):
@@ -169,3 +149,6 @@ def format_columns_parallel(data, columns):
         thread.join()
 
     return formatted_data
+
+
+
