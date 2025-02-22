@@ -33,7 +33,7 @@ def format_date_and_time(date_str):
         messages=[
             {
                 "role": "system",
-                "content": "Your task is to convert date and time in any format into the standardized format `YYYY-MM-DD HH:MM:SS-` if not time is given skip it please. Only return the formatted date and time, without extra explanation. if not time is given dont return it please listen carefully"
+              "content": "Your task is to convert date and time in any format into the standardized format YYYY-MM-DD HH:MM:SS. If a range of time or date is provided, format both dates and times accordingly, but show the date once at the beginning and the time range following it with a dash - separating the two times. If no time is provided, do not include it in the output. Only return the formatted date and time, without extra explanation. For example, if given '2025-04-08 17:00:00 – 2025-04-08 19:30:00', return '2025-04-08 17:00:00-19:30:00'. If no time is given, only return the date in YYYY-MM-DD format."
             },
             {
                 "role": "user",
