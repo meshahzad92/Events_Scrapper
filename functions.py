@@ -27,22 +27,39 @@ def format_event_name(event_name):
     )
     return chat_completion.choices[0].message.content.strip()
 
-# Function to format the event date and time
 def format_date_and_time(date_str):
+    # Call the Groq API to generate a response
     chat_completion = client.chat.completions.create(
         messages=[
             {
                 "role": "system",
-              "content": "Your task is to convert date and time in any format into the standardized format YYYY-MM-DD HH:MM:SS. If a range of time or date is provided, format both dates and times accordingly, but show the date once at the beginning and the time range following it with a dash - separating the two times. If no time is provided, do not include it in the output. Only return the formatted date and time, without extra explanation. For example, if given '2025-04-08 17:00:00 – 2025-04-08 19:30:00', return '2025-04-08 17:00:00-19:30:00'. If no time is given, only return the date in YYYY-MM-DD format."
+                "content": """
+                    Your task is to convert date and time in any format into a standardized format: 
+                    YYYY-MM-DD HH:MM:SS. If a range of time or date is provided, format both the start and end dates and times accordingly.
+                    - If there is a time range (e.g., 6:30 p.m. - 8:00 p.m.), format it as 'YYYY-MM-DD HH:MM:SS-HH:MM:SS'.
+                    - If no time is given but only a date, output the date in the format 'YYYY-MM-DD'.
+                    - Handle ambiguous formats, e.g., date ranges or times with time zones, and standardize them.
+                    Do not include extra explanations. Only return the formatted date and time.
+                """
             },
             {
                 "role": "user",
                 "content": f"Format the date and time: {date_str}"
             }
         ],
-        model="llama3-70b-8192",
+        model="llama3-70b-8192",  # or any other model you are using
     )
-    return chat_completion.choices[0].message.content.strip()
+    
+    # Adjust based on Groq's response structure
+    # Assuming Groq's response is structured like OpenAI's, this should work:
+    try:
+        print("Done")
+        return chat_completion['choices'][0]['message']['content'].strip()
+    except (KeyError, IndexError):
+        # If there's an error with the structure, print the full response for inspection
+        print("Error with response format:")
+        print(chat_completion)
+        return None
 
 # Function to format the event description
 def format_description(description):
@@ -78,23 +95,32 @@ def format_location(location):
     )
     return chat_completion.choices[0].message.content.strip()
 
-# Function to format the event cost
 def format_cost(cost_str):
+    # Call the Groq API to format the cost
     chat_completion = client.chat.completions.create(
         messages=[
             {
                 "role": "system",
-                "content": "Your task is to format event costs in a consistent manner, including ranges (e.g., 'From $10 to $20') and single values (e.g., 'Cost: $50'). Only return the formatted cost.if there is two costs just pick the big one and do with that if there is Not Available return 'Cost not available then keep it as it is Not Available but dont return like a sentence return numbers with dollar sign '" 
+                "content": """
+                    Your task is to format event costs in a consistent manner:
+                    - If the cost is a range (e.g., 'From $10 to $20'), pick the higher value and return it as '$20'.
+                    - If there are multiple costs provided (e.g., '$10 and $15'), pick the higher value and return it as '$15'.
+                    - If the cost is 'Free', return 'Free'.
+                    - If the cost is 'Not Available', return 'Not Available'.
+                    - In all cases, return the formatted cost as a number with a dollar sign (e.g., '$50').
+                    Do not include any extra explanation. Only return the formatted cost.
+                """
             },
             {
                 "role": "user",
                 "content": f"Format the event cost: {cost_str}"
             }
         ],
-        model="llama3-70b-8192",
+        model="llama3-70b-8192",  # Make sure to use the correct model
     )
-    return chat_completion.choices[0].message.content.strip()
-
+    
+    # Extract and return the formatted cost
+    return chat_completion['choices'][0]['message']['content'].strip()
 # Function to validate and format the event URL
 def format_url(url):
     chat_completion = client.chat.completions.create(
